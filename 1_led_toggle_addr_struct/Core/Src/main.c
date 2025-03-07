@@ -8,6 +8,7 @@
  * integrated into a microcontroller to provide extended functionality
  * and capabilities for various applications in computer science
  * */
+#include <stdint.h>
 
 #define PERIPH_BASE (0x40000000UL)
 #define AHB2PERIPH_OFFSET (0x08000000UL)
@@ -57,22 +58,15 @@ typedef struct
 
 int main(void) {
 	//1. Enable clock access to GPIOA
-	//RCC_AHB2EN_R |= GPIOAEN;
 	RCC->AHB2ENR |= GPIOAEN;
 
 	//2. Set PA5 to output pin
-	//GPIOA_MODE_R |= (1U<<10);
-	//GPIOA_MODE_R &=~(1U<<11);
 	GPIOA->MODER |= (1U<<10);
 	GPIOA->MODER &=~(1U<<11);
 
 
 	while(1) {
-		//Set PA5 high
-		//GPIOA_OD_R |= LED_PIN;
-
 		//Toggle PA5
-		//GPIOA_OD_R ^= LED_PIN;
 		GPIOA->ODR ^= LED_PIN;
 		for (int i = 0; i < 100000; i++){}
 	}
