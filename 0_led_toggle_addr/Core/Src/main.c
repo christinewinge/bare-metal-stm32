@@ -24,7 +24,8 @@
 
 #define AHB2EN_R_OFFSET (0x4CUL) //R for register, so AHB2 enable register offset
 
-#define RCC_AHB2EN_R (*(volatile unsigned int *) (RCC_BASE + AHB2EN_R_OFFSET))
+//#define RCC_AHB2EN_R (*(volatile unsigned int *) (RCC_BASE + AHB2EN_R_OFFSET))
+#define RCC_AHB2EN_R (volatile unsigned int *) (RCC_BASE + AHB2EN_R_OFFSET)
 
 #define GPIOAEN (1U<<0)
 
@@ -44,17 +45,17 @@ int main(void) {
 	//1. Enable clock access to GPIOA
 	//2. Set PA5 to output pin
 
-	RCC_AHB2EN_R |= GPIOAEN;
+	*RCC_AHB2EN_R |= GPIOAEN;
 	GPIOA_MODE_R |= (1U<<10);
 	GPIOA_MODE_R &=~(1U<<11);
 
 	while(1) {
 		//Set PA5 high
-		//GPIOA_OD_R |= LED_PIN;
+		GPIOA_OD_R |= LED_PIN;
 
 		//Toggle PA5
-		GPIOA_OD_R ^= LED_PIN;
-		for (int i = 0; i < 100000; i++){}
+		//GPIOA_OD_R ^= LED_PIN;
+		//for (int i = 0; i < 100000; i++){}
 	}
 }
 
