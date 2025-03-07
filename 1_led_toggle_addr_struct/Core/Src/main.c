@@ -23,20 +23,7 @@
 #define RCC_OFFSET (0x00001000UL)
 #define RCC_BASE (AHB1PERIPH_BASE + RCC_OFFSET)
 
-#define AHB2EN_R_OFFSET (0x4CUL) //R for register, so AHB2 enable register offset
-
-#define RCC_AHB2EN_R (*(volatile unsigned int *) (RCC_BASE + AHB2EN_R_OFFSET))
-
 #define GPIOAEN (1U<<0)
-
-#define MODE_R_OFFSET (0x00UL)
-#define GPIOA_MODE_R (*(volatile unsigned int *)(GPIOA_BASE + MODE_R_OFFSET))
-/*
- * (1U<<10)    // Set bit 10 to 1
- * &=~(1U<<11) //Set bit 11 to 0*/
-
-#define OD_R_OFFSET (0x14UL) //Output data register offset
-#define GPIOA_OD_R (*(volatile unsigned int *)(GPIOA_BASE + OD_R_OFFSET))
 #define PIN5 (1U<<5)
 #define LED_PIN PIN5 //LED2, user LED
 
