@@ -7,3 +7,10 @@
 !0_led_toggle_addr/Core/Src
 0_led_toggle_addr/Core/Src/*
 !0_led_toggle_addr/Core/Src/main.c
+
+1_led_toggle_addr_struct/*
+!1_led_toggle_addr_struct/Core/
+1_led_toggle_addr_struct/Core/*
+!1_led_toggle_addr_struct/Core/Src
+1_led_toggle_addr_struct/Core/Src/*
+!1_led_toggle_addr_struct/Core/Src/main.c
