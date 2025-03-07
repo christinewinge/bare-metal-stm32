@@ -53,3 +53,9 @@ int main(void) {
 		GPIOA_OD_R |= LED_PIN;
 	}
 }
+
+
+
+
+
+

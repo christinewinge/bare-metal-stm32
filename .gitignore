@@ -1,7 +1,9 @@
 .metadata
-0_led_toggle_addr_simple/*
-!0_led_toggle_addr_simple/Core/
-0_led_toggle_addr_simple/Core/*
-!0_led_toggle_addr_simple/Core/Src
-0_led_toggle_addr_simple/Core/Src/*
-!0_led_toggle_addr_simple/Core/Src/main.c
+.DS_Store
+.project
+0_led_toggle_addr/*
+!0_led_toggle_addr/Core/
+0_led_toggle_addr/Core/*
+!0_led_toggle_addr/Core/Src
+0_led_toggle_addr/Core/Src/*
+!0_led_toggle_addr/Core/Src/main.c
