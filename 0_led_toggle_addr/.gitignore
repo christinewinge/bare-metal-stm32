@@ -1,3 +1,0 @@
-STM32G474RETX_FLASH.ld
-STM32G474RETX_RAM.ld
-0_led_toggle_addr Debug.launch
