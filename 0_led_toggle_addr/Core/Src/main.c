@@ -50,7 +50,7 @@ int main(void) {
 
 	while(1) {
 		//Set PA5 high
-		GPIOA_OD_R |= LED_PIN;
+		GPIOA_OD_R &= ~LED_PIN;
 	}
 }
 
