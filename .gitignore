@@ -1,0 +1,7 @@
+.metadata
+0_led_toggle_addr_simple/*
+!0_led_toggle_addr_simple/Core/
+0_led_toggle_addr_simple/Core/*
+!0_led_toggle_addr_simple/Core/Src
+0_led_toggle_addr_simple/Core/Src/*
+!0_led_toggle_addr_simple/Core/Src/main.c
