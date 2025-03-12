@@ -60,6 +60,17 @@ static void MX_I2C1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+static void DelayUS(uint32_t us) {
+  uint32_t cycles = (SystemCoreClock/1000000L)*us;
+  uint32_t start = DWT->CYCCNT;
+  volatile uint32_t cnt;
+
+  do
+  {
+    cnt = DWT->CYCCNT - start;
+  } while(cnt < cycles);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -112,12 +123,43 @@ int main(void)
 
   /* Move position */
   HD44780_SetCursor(0, 1);
-  HD44780_PrintStr("BYE STM32!!!");
-  HD44780_PrintSpecialChar(1);
+  //HD44780_PrintStr("BYE STM32!!!");
+  //HD44780_PrintSpecialChar(1);
+
+  /* Blink cursor */
+  //HD44780_Blink();
+
+  uint8_t value = 65;
+
+  uint8_t highnib = value & 0xF0;
+  uint8_t lownib = (value<<4) & 0xF0;
+
+  uint8_t _data = highnib | 0x01;
+
+  uint8_t data = _data | LCD_BACKLIGHT;
+  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
+  data = (_data | ENABLE);
+  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
+  DelayUS(20);
+
+  data = (_data & ~ENABLE);
+  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
+  DelayUS(20);
+
+  _data = lownib | 0x01;
+
+  data = _data | LCD_BACKLIGHT;
+  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
+  data = (_data | ENABLE);
+  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
+  DelayUS(20);
+
+  data = (_data & ~ENABLE);
+  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
+  DelayUS(20);
 
   /* Blink cursor */
   HD44780_Blink();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
