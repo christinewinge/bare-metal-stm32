@@ -108,28 +108,8 @@ int main(void)
   /* Initialize */
   HD44780_Init(2);
 
-  /* Clear buffer */
-  HD44780_Clear();
-
-  /* Hide characters */
-  HD44780_NoDisplay();
-  HD44780_Cursor();
-  HD44780_SetCursor(0,0);
-  HD44780_PrintStr("HELLO STM32!!!");
-  HD44780_PrintSpecialChar(0);
-
-  /* Show characters */
-  HD44780_Display();
-
-  /* Move position */
-  HD44780_SetCursor(0, 1);
-  //HD44780_PrintStr("BYE STM32!!!");
-  //HD44780_PrintSpecialChar(1);
-
-  /* Blink cursor */
-  //HD44780_Blink();
-
-  uint8_t value = 65;
+  /* Send one byte */
+  uint8_t value = 66;
 
   uint8_t highnib = value & 0xF0;
   uint8_t lownib = (value<<4) & 0xF0;
