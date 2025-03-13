@@ -114,7 +114,7 @@ int main(void)
   uint8_t highnib = value & 0xF0;
   uint8_t lownib = (value<<4) & 0xF0;
 
-  uint8_t _data = highnib | 0x01;
+  uint8_t _data = 0b01000001;//highnib | 0x01;
 
   uint8_t data = _data | LCD_BACKLIGHT;
   HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
@@ -126,7 +126,7 @@ int main(void)
   HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
   DelayUS(20);
 
-  _data = lownib | 0x01;
+  _data = 0b00010001;//lownib | 0x01;
 
   data = _data | LCD_BACKLIGHT;
   HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
