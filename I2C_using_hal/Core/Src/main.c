@@ -40,6 +40,8 @@
 
 /* Private variables ---------------------------------------------------------*/
  I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
+I2C_HandleTypeDef hi2c3;
 
 UART_HandleTypeDef hlpuart1;
 
@@ -53,6 +55,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_I2C2_Init(void);
+static void MX_I2C3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -69,6 +73,185 @@ static void DelayUS(uint32_t us) {
   {
     cnt = DWT->CYCCNT - start;
   } while(cnt < cycles);
+}
+
+static void DelayInit(void)
+{
+  CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk;
+  CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk;
+
+  DWT->CTRL &= ~DWT_CTRL_CYCCNTENA_Msk; //~0x00000001;
+  DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //0x00000001;
+
+  DWT->CYCCNT = 0;
+
+  /* 3 NO OPERATION instructions */
+  __ASM volatile ("NOP");
+  __ASM volatile ("NOP");
+  __ASM volatile ("NOP");
+}
+
+void init(void) {
+	DelayInit();
+	HAL_Delay(50);
+	uint8_t backlight = 0b00001000;
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&backlight, 1, 10);
+	HAL_Delay(1000);
+
+	/* 4bit Mode WORKS*/
+	uint8_t unknown_command = 0b00110000;
+	uint8_t unknown_command_with_enable = 0b00110100;
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command, 1, 10);
+	DelayUS(4500);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command, 1, 10);
+	DelayUS(4500);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command, 1, 10);
+	DelayUS(4500);
+
+	uint8_t unknown_command_2 = 0b00100000;
+	uint8_t unknown_command_with_enable_2 = 0b00100100;
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command_2, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command_with_enable_2, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&unknown_command_2, 1, 10);
+	DelayUS(4500);
+
+	/* Display Control WORKS*/
+	uint8_t display_control_command = 0b00100100;
+	uint8_t highnib = ((uint8_t)display_control_command & 0xF0) | 0x08;
+	uint8_t lownib = ((((uint8_t)display_control_command)<<4) & 0xF0) | 0x08;
+	uint8_t highnib_with_enable = highnib | 0x04;
+	uint8_t lownib_with_enable = lownib | 0x04;
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	DelayUS(20);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	DelayUS(4500);
+
+	/* Display  WORKS */
+	uint8_t set_display_command = 0b00001100;
+	highnib = ((uint8_t)set_display_command & 0xF0) | 0x08;
+	lownib = ((((uint8_t)set_display_command)<<4) & 0xF0) | 0x08;
+	highnib_with_enable = highnib | 0x04;
+	lownib_with_enable = lownib | 0x04;
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	DelayUS(20);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	DelayUS(4500);
+
+	/* Clear display WORKS */
+	uint8_t clear_display_command = 0b00000001;
+	highnib = ((uint8_t)clear_display_command & 0xF0) | 0x08;
+	lownib = ((((uint8_t)clear_display_command)<<4) & 0xF0) | 0x08;
+	highnib_with_enable = highnib | 0x04;
+	lownib_with_enable = lownib | 0x04;
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	DelayUS(100);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	DelayUS(4500);
+
+	/* Display Mode WORKS */
+	uint8_t dp_mode_command = 0b00000110;
+	highnib = ((uint8_t)dp_mode_command & 0xF0) | 0x08;
+	lownib = ((((uint8_t)dp_mode_command)<<4) & 0xF0) | 0x08;
+	highnib_with_enable = highnib | 0x04;
+	lownib_with_enable = lownib | 0x04;
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	DelayUS(100);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	DelayUS(20);
+	DelayUS(4500);
+
+
+	/* return home WORKS */
+	uint8_t return_home_command = 0b00000010;
+	highnib = ((uint8_t)return_home_command & 0xF0) | 0x08;
+	lownib = ((((uint8_t)return_home_command)<<4) & 0xF0) | 0x08;
+	highnib_with_enable = highnib | 0x04;
+	lownib_with_enable = lownib | 0x04;
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib, 1, 10);
+	DelayUS(100);
+
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_enable, 1, 10);
+	DelayUS(20);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib, 1, 10);
+	DelayUS(100);
+}
+
+void sendCharacter(char character) {
+	  /* Send one byte */
+
+	  uint8_t highnib = (uint8_t)character & 0xF0;
+	  uint8_t lownib = (((uint8_t)character)<<4) & 0xF0;
+
+	  uint8_t highnib_with_rs = highnib | 0x01; //Add RS bit
+	  uint8_t lownib_with_rs = lownib | 0x01;
+
+	  uint8_t highnib_with_enable = 0b01000101;//highnib_with_rs | 0x04;
+	  uint8_t lownib_with_enable = 0b00010101;//lownib_with_rs | 0x04;
+
+	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_rs, 1, 10);
+
+	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_enable, 1, 10);
+	  DelayUS(20);
+
+	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&highnib_with_rs, 1, 10);
+	  DelayUS(20);
+
+	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_rs, 1, 10);
+
+	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_enable, 1, 10);
+	  DelayUS(20);
+
+	  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&lownib_with_rs, 1, 10);
+	  DelayUS(20);
 }
 
 /* USER CODE END 0 */
@@ -103,43 +286,18 @@ int main(void)
   MX_GPIO_Init();
   MX_LPUART1_UART_Init();
   MX_I2C1_Init();
+  MX_I2C2_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
 
   /* Initialize */
-  HD44780_Init(2);
+  HD44780_Init(1);
+  //init();
 
-  /* Send one byte */
-  uint8_t value = 66;
+  sendCharacter('A');
+  HD44780_Display();
+  HD44780_Backlight();
 
-  uint8_t highnib = value & 0xF0;
-  uint8_t lownib = (value<<4) & 0xF0;
-
-  uint8_t _data = 0b01000001;//highnib | 0x01;
-
-  uint8_t data = _data | LCD_BACKLIGHT;
-  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
-  data = (_data | ENABLE);
-  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
-  DelayUS(20);
-
-  data = (_data & ~ENABLE);
-  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
-  DelayUS(20);
-
-  _data = 0b00010001;//lownib | 0x01;
-
-  data = _data | LCD_BACKLIGHT;
-  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
-  data = (_data | ENABLE);
-  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
-  DelayUS(20);
-
-  data = (_data & ~ENABLE);
-  HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*)&data, 1, 10);
-  DelayUS(20);
-
-  /* Blink cursor */
-  HD44780_Blink();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -147,6 +305,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -243,6 +402,102 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x30A0A7FB;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
+
+}
+
+/**
+  * @brief I2C3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C3_Init(void)
+{
+
+  /* USER CODE BEGIN I2C3_Init 0 */
+
+  /* USER CODE END I2C3_Init 0 */
+
+  /* USER CODE BEGIN I2C3_Init 1 */
+
+  /* USER CODE END I2C3_Init 1 */
+  hi2c3.Instance = I2C3;
+  hi2c3.Init.Timing = 0x30A0A7FB;
+  hi2c3.Init.OwnAddress1 = 0;
+  hi2c3.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c3.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c3.Init.OwnAddress2 = 0;
+  hi2c3.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c3.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c3.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c3, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c3, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C3_Init 2 */
+
+  /* USER CODE END I2C3_Init 2 */
 
 }
 

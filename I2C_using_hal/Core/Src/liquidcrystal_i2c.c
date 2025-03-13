@@ -79,18 +79,18 @@ void HD44780_Init(uint8_t rows)
   /* Display Control */
   SendCommand(LCD_FUNCTIONSET | dpFunction);
 
+  /* Display */
   dpControl = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
   HD44780_Display();
+
+  /* Clear display */
   HD44780_Clear();
 
   /* Display Mode */
   dpMode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
   SendCommand(LCD_ENTRYMODESET | dpMode);
   DelayUS(4500);
-
-  HD44780_CreateSpecialChar(0, special1);
-  HD44780_CreateSpecialChar(1, special2);
-
+  /* return home */
   HD44780_Home();
 }
 
