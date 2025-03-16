@@ -21,9 +21,9 @@ I2C_using_hal/Core/*
 !I2C_using_hal/Core/Src
 I2C_using_hal/Core/Src/*
 !I2C_using_hal/Core/Src/main.c
-!I2C_using_hal/Core/Src/liquidcrystal_i2c.c
+!I2C_using_hal/Core/Src/lcd_screen_lib.c
 
 !I2C_using_hal/Core/Inc
 I2C_using_hal/Core/Inc/*
 !I2C_using_hal/Core/Inc/main.h
-!I2C_using_hal/Core/Inc/liquidcrystal_i2c.h
+!I2C_using_hal/Core/Inc/lcd_screen_lib.h
