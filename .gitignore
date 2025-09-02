@@ -35,8 +35,10 @@ I2C_bare_metall/Core/*
 I2C_bare_metall/Core/Src/*
 !I2C_bare_metall/Core/Src/main.c
 !I2C_bare_metall/Core/Src/lcd_screen_lib.c
+!I2C_bare_metall/Core/Src/i2c_lib.c
 
 !I2C_bare_metall/Core/Inc
 I2C_bare_metall/Core/Inc/*
 !I2C_bare_metall/Core/Inc/main.h
 !I2C_bare_metall/Core/Inc/lcd_screen_lib.h
+!I2C_bare_metall/Core/Inc/i2c_lib.h

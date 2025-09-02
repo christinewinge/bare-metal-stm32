@@ -6,8 +6,7 @@
  */
 
 #include <lcd_screen_lib.h>
-
-I2C_HandleTypeDef _hi2c;
+#include "i2c_lib.h"
 
 static void send_command(uint8_t command) {
 	uint8_t upper_bits = command & 0xF0;
@@ -20,7 +19,7 @@ static void send_command(uint8_t command) {
 	send_buffer[2] = lower_bits | LED_HEADER_BACKLIGHT | LED_HEADER_ENABLE;
 	send_buffer[3] = lower_bits | LED_HEADER_BACKLIGHT;
 
-	HAL_I2C_Master_Transmit(&_hi2c, LED_DEVICE_ADDR, (uint8_t*)&send_buffer, 4, 10);
+	i2c_send_data(LED_DEVICE_ADDR, 4, (uint8_t*)&send_buffer);
 }
 
 static void send_data(uint8_t data) {
@@ -34,11 +33,11 @@ static void send_data(uint8_t data) {
 	send_buffer[2] = lower_bits | LED_HEADER_RS | LED_HEADER_BACKLIGHT | LED_HEADER_ENABLE;
 	send_buffer[3] = lower_bits | LED_HEADER_RS | LED_HEADER_BACKLIGHT;
 
-	HAL_I2C_Master_Transmit(&_hi2c, LED_DEVICE_ADDR, (uint8_t*)&send_buffer, 4, 10);
+	i2c_send_data(LED_DEVICE_ADDR, 4, (uint8_t*)&send_buffer);
 }
 
-void led_init(I2C_HandleTypeDef hi2c) {
-	_hi2c = hi2c;
+void led_init() {
+	i2c_setup();
 
 	send_command(0x30);
 	HAL_Delay(5);
