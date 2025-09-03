@@ -12,6 +12,7 @@ int main(void)
 	uint32_t led_device_addr = 0x27;
 	led_init();
 	led_send_character('A');
+	led_send_string("Hello!!!");
 
 	while (1)
 	{

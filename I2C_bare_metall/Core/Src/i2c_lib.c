@@ -31,7 +31,7 @@
 #define APB1PERIPH_BASE (PERIPH_BASE + APB1PERIPH_OFFSET)
 
 #define I2C1PERIPH_OFFSET (0x5400UL)
-#define I2C1PERIPH_BASE (APB1PERIPH_BASE + I2C1PERIPH_OFFSET)
+#define I2C1PERIPH_BASE (PERIPH_BASE + I2C1PERIPH_OFFSET)//(APB1PERIPH_BASE + I2C1PERIPH_OFFSET)
 
 
 #define GPIOBEN (1U<<1)
@@ -42,7 +42,7 @@ typedef struct
 {
 	volatile uint32_t DUMMY[19];
 	volatile uint32_t AHB2ENR;
-	volatile uint32_t AHB3ENR;
+	volatile uint32_t AHB3ENR[2];
 	volatile uint32_t APB1ENR1;
 }RCC_TypeDef;
 
@@ -80,7 +80,7 @@ typedef struct
 #define I2C1 ((I2C_TypeDef*) I2C1PERIPH_BASE)
 
 static void i2c_start_communication(uint32_t slave_address, uint32_t size);
-static void i2c_send_byte(char data);
+static void i2c_send_byte(uint8_t data);
 
 void i2c_setup(void)
 {
@@ -118,15 +118,19 @@ void i2c_setup(void)
 	// reset i2c
 	I2C1->CR1 &= ~(1<<0);
 
+	// Wait at least 3 clock cycles
+
 	// configure ccr
 	uint32_t i2c_timing = 0x00303D5B;
 	I2C1->TIMINGR |= i2c_timing;
+
+	// AUTOEND = 1 in cr2
 
 	// enable i2c
 	I2C1->CR1 |= (1<<0);
 }
 
-void i2c_send_data(uint32_t slave_address, uint32_t size, char* data)
+void i2c_send_data(uint32_t slave_address, uint32_t size, uint8_t* data)
 {
 	i2c_start_communication(slave_address, size);
 	while(*data) i2c_send_byte(*data++);
@@ -134,13 +138,18 @@ void i2c_send_data(uint32_t slave_address, uint32_t size, char* data)
 
 static void i2c_start_communication(uint32_t slave_address, uint32_t size)
 {
+	// Set address mode (7-bit)
 	I2C1->CR2 |= (slave_address<<1); // Bits 8, 9 and 0 are don't care.
 	I2C1->CR2 |= (1U<<10); // R/W -> W
 	I2C1->CR2 |= (size<<16); // Size of data
+
+	// Make sure the I2C-bus is idle. Check that the IDR bits of the sda and scl pins are set.
 	I2C1->CR2 |= (1U<<13); // START
+
+	while(I2C1->CR2 & (1U<<13)); // Wait for START to be cleared, which can mean that it is sent
 }
 
-static void i2c_send_byte(char data)
+static void i2c_send_byte(uint8_t data)
 {
 	I2C1->TXDR |= (data<<0); // Data to be sent
 	while(!(I2C1->ISR & (1U<<1))); // TXIS
