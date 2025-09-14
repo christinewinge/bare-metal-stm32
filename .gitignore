@@ -35,6 +35,11 @@ STM32Cube_FW_G4_V1.6.0
 3_gpio_bsrr/Inc/*
 !3_gpio_bsrr/Inc/main.h
 
+4_gpio_input/*
+!4_gpio_input/Src
+4_gpio_input/Src/*
+!4_gpio_input/Src/main.c
+
 I2C_using_hal/*
 !I2C_using_hal/Core/
 I2C_using_hal/Core/*
