@@ -132,17 +132,22 @@ void i2c_setup(void)
 
 void i2c_send_data(uint32_t slave_address, uint32_t size, uint8_t* data)
 {
-	i2c_start_communication(slave_address, size);
-	while(*data) i2c_send_byte(*data++);
+	i2c_start_communication(slave_address, size+1);
+	for (int i = 0; i < size; i++)
+	{
+		i2c_send_byte(data[i]);
+	}
+	I2C1->CR2 |= (1U<<14);
 }
 
 static void i2c_start_communication(uint32_t slave_address, uint32_t size)
 {
 	// Set address mode (7-bit)
 	I2C1->CR2 |= (slave_address<<1); // Bits 8, 9 and 0 are don't care.
-	I2C1->CR2 |= (1U<<10); // R/W -> W
+	//I2C1->CR2 |= (1U<<10); // R/W -> W
 	I2C1->CR2 |= (size<<16); // Size of data
 
+	//I2C1->CR2 |= (1U<<25); // AUTOEND
 	// Make sure the I2C-bus is idle. Check that the IDR bits of the sda and scl pins are set.
 	I2C1->CR2 |= (1U<<13); // START
 
