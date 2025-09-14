@@ -1,6 +1,8 @@
 .metadata
 .DS_Store
 .project
+STM32Cube_FW_G4_V1.6.0
+
 0_led_toggle_addr/*
 !0_led_toggle_addr/Core/
 0_led_toggle_addr/Core/*
@@ -14,6 +16,15 @@
 !1_led_toggle_addr_struct/Core/Src
 1_led_toggle_addr_struct/Core/Src/*
 !1_led_toggle_addr_struct/Core/Src/main.c
+
+2_gpio_output/*
+!2_gpio_output/Src
+2_gpio_output/Src/*
+!2_gpio_output/Src/main.c
+
+!2_gpio_output/Inc
+2_gpio_output/Inc/*
+!2_gpio_output/Inc/main.h
 
 I2C_using_hal/*
 !I2C_using_hal/Core/
@@ -42,3 +53,5 @@ I2C_bare_metall/Core/Inc/*
 !I2C_bare_metall/Core/Inc/main.h
 !I2C_bare_metall/Core/Inc/lcd_screen_lib.h
 !I2C_bare_metall/Core/Inc/i2c_lib.h
+
+I2C_bare_metall_test/*
